@@ -1,10 +1,11 @@
 package syberry.hackathon.bank.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import syberry.hackathon.bank.entity.enums.BankType;
 
 @Data
-public abstract class BankEntity {
+@AllArgsConstructor
+public class BankEntity {
     private String name;
-    private BankType bankType;
+    private String api;
 }
