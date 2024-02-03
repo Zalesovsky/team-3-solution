@@ -14,7 +14,7 @@ public class NationalBankServiceImpl implements BankService {
 
     @Override
     public Set<String> getAllCurrencies() {
-        return Set.of("евро", "доллар", "российиский рубль", "белорусский рубль");
+        return Set.of("евро", "доллар", "российиский рубль");
     }
 
     public String getRateForDate(String date){

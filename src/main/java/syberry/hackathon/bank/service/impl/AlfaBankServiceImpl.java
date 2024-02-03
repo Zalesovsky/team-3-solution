@@ -17,7 +17,7 @@ public class AlfaBankServiceImpl implements BankService {
 
     @Override
     public Set<String> getAllCurrencies() {
-        return Set.of("евро", "доллар", "российиский рубль", "белорусский рубль");
+        return Set.of("евро", "доллар", "российиский рубль");
 
     }
 
