@@ -15,4 +15,6 @@ public class BelarusBankServiceImpl implements BankService {
     public Set<String> getAllCurrencies() {
         return Set.of("евро", "доллар", "российиский рубль", "белорусский рубль");
     }
+
+
 }
