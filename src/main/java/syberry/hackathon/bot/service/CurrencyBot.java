@@ -1,6 +1,5 @@
 package syberry.hackathon.bot.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import syberry.hackathon.bank.service.impl.BankNamesServiceImpl;
 import syberry.hackathon.bot.config.BotConfig;
 import syberry.hackathon.bot.constant.Constant;
 
@@ -17,13 +17,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-
 public class CurrencyBot extends TelegramLongPollingBot {
 
-    @Autowired
-    private BotConfig config;
+    private final BotConfig config;
+
+    private final BankNamesServiceImpl bankNames;
 
     private String currentBank;
+
+    private String currentCurrency;
+
+    public CurrencyBot(BotConfig config, BankNamesServiceImpl bankNames) {
+        this.config = config;
+        this.bankNames = bankNames;
+    }
+
+
     @Override
     public String getBotUsername() {
         return config.getBotName();
@@ -43,18 +52,17 @@ public class CurrencyBot extends TelegramLongPollingBot {
 
         if (message.hasText()){
 
-            if (message.getText().equals("/start")){
+            if (message.getText().equals("/start") && currentBank==null){
 
                 initGreetKeyboard(message);
             }
 
-            initCurrencyKeyboard(message);
+            if (bankNames.getAllBankNames().contains(message.getText())){
+                currentBank = message.getText();
 
-
-
-
+                initCurrencyKeyboard(message);
+            }
         }
-
     }
 
 
@@ -66,14 +74,14 @@ public class CurrencyBot extends TelegramLongPollingBot {
         List<KeyboardRow> rows = new ArrayList<>();
 
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton(Constant.NATIONAL_BANK));
 
-        KeyboardRow row2 = new KeyboardRow();
-        row2.add(new KeyboardButton(Constant.ALPHA_BANK));
-        row2.add(new KeyboardButton(Constant.BELARUS_BANK));
+        for (String str :
+                bankNames.getAllBankNames()) {
+
+            row1.add(new KeyboardButton(str));
+        }
 
         rows.add(row1);
-        rows.add(row2);
 
         replyKeyboardMarkup.setKeyboard(rows);
 
@@ -86,7 +94,6 @@ public class CurrencyBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private void initCurrencyKeyboard(Message message){
@@ -97,10 +104,6 @@ public class CurrencyBot extends TelegramLongPollingBot {
         List<KeyboardRow> rows = new ArrayList<>();
 
         KeyboardRow row1 = new KeyboardRow();
-        row1.add(new KeyboardButton(Constant.USD));
-        row1.add(new KeyboardButton(Constant.EUR));
-        row1.add(new KeyboardButton(Constant.GBP));
-        row1.add(new KeyboardButton(Constant.JPY));
 
         rows.add(row1);
 
@@ -116,6 +119,40 @@ public class CurrencyBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);
         }
 
+
+    }
+
+    private void initPeriodsKeyboard(Message message){
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+
+        List<KeyboardRow> rows = new ArrayList<>();
+
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add(new KeyboardButton(Constant.CURRENT_DAY_COURSE));
+        row1.add(new KeyboardButton(Constant.SELECTED_DAY_COURSE));
+        row1.add(new KeyboardButton(Constant.COLLECT_DATA));
+
+        KeyboardRow row2 = new KeyboardRow();
+
+        row2.add(new KeyboardButton(Constant.CHOOSE_DIFFERENT_BANK));
+        row2.add(new KeyboardButton(Constant.CHOOSE_DIFFERENT_CURRENCY));
+
+        rows.add(row1);
+        rows.add(row2);
+
+        replyKeyboardMarkup.setKeyboard(rows);
+
+        try {
+            execute(SendMessage.builder()
+                    .text("Выбранная валюта " + currentCurrency + ".")
+                    .chatId(message.getChatId())
+                    .replyMarkup(replyKeyboardMarkup)
+                    .build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
