@@ -51,7 +51,7 @@ public class CurrencyBot extends TelegramLongPollingBot {
 
 
     @Override
-    public String getBotToken(){
+    public String getBotToken() {
         return config.getBotToken();
     }
 
@@ -63,24 +63,24 @@ public class CurrencyBot extends TelegramLongPollingBot {
 
         long chatId = message.getChatId();
 
-        if (message.hasText()){
+        if (message.hasText()) {
 
-            if (message.getText().equals("/start")){
+            if (message.getText().equals("/start")) {
 
                 initGreetKeyboard(message);
             }
 
-            if (bankNames.getAllBankNames().contains(message.getText())){
+            if (bankNames.getAllBankNames().contains(message.getText())) {
 
                 stepCombination.setBankName(message.getText());
                 usersSteps.put(chatId, stepCombination);
             }
 
-            if (message.getText().equals("Альфа-Банк")){
+            if (message.getText().equals("Альфа-Банк")) {
 
                 initCurrencyKeyboardAlphaBank(message, alfaBankService);
 
-            } else if (message.getText().equals("Беларусбанк")){
+            } else if (message.getText().equals("Беларусбанк")) {
 
                 initCurrencyKeyboardBelarusbank(message, belarusBankService);
             } else if (message.getText().equals("Нацбанк Республики Беларусь")) {
@@ -92,12 +92,13 @@ public class CurrencyBot extends TelegramLongPollingBot {
 
             usersSteps.put(chatId, stepCombination);
 
+            getABCurrencies(message);
 //            initPeriodsKeyboard(message);
         }
     }
 
 
-    private void initGreetKeyboard(Message message){
+    private void initGreetKeyboard(Message message) {
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -127,35 +128,7 @@ public class CurrencyBot extends TelegramLongPollingBot {
         }
     }
 
-    private void initCurrencyKeyboardAlphaBank(Message message, AlfaBankServiceImpl bankService){
-
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        replyKeyboardMarkup.setResizeKeyboard(true);
-
-        List<KeyboardRow> rows = new ArrayList<>();
-
-        KeyboardRow row1 = new KeyboardRow();
-
-        for (String currency : bankService.getAllCurrencies()) {
-
-            row1.add(new KeyboardButton(currency));
-        }
-
-        rows.add(row1);
-
-        replyKeyboardMarkup.setKeyboard(rows);
-
-        try {
-            execute(SendMessage.builder()
-                    .text("Ты выбрал " + usersSteps.get(message.getChatId()).getBankName() + ". Теперь выбери нужную тебе валюту из списка ниже.")
-                    .chatId(message.getChatId())
-                    .replyMarkup(replyKeyboardMarkup)
-                    .build());
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    private void initCurrencyKeyboardBelarusbank(Message message, BelarusBankServiceImpl bankService){
+    private void initCurrencyKeyboardAlphaBank(Message message, AlfaBankServiceImpl bankService) {
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -184,7 +157,7 @@ public class CurrencyBot extends TelegramLongPollingBot {
         }
     }
 
-    private void initCurrencyKeyboardNatsBank(Message message, NationalBankServiceImpl bankService){
+    private void initCurrencyKeyboardBelarusbank(Message message, BelarusBankServiceImpl bankService) {
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -213,7 +186,89 @@ public class CurrencyBot extends TelegramLongPollingBot {
         }
     }
 
-    private void initPeriodsKeyboard(Message message){
+    private void initCurrencyKeyboardNatsBank(Message message, NationalBankServiceImpl bankService) {
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+
+        List<KeyboardRow> rows = new ArrayList<>();
+
+        KeyboardRow row1 = new KeyboardRow();
+
+        for (String currency : bankService.getAllCurrencies()) {
+
+            row1.add(new KeyboardButton(currency));
+        }
+
+        rows.add(row1);
+
+        replyKeyboardMarkup.setKeyboard(rows);
+
+        try {
+            execute(SendMessage.builder()
+                    .text("Ты выбрал " + usersSteps.get(message.getChatId()).getBankName() + ". Теперь выбери нужную тебе валюту из списка ниже.")
+                    .chatId(message.getChatId())
+                    .replyMarkup(replyKeyboardMarkup)
+                    .build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void getABCurrencies(Message message) {
+        String answer = "";
+        switch (stepCombination.getBankName()) {
+            case ("Альфа-Банк"):
+                switch(stepCombination.getCurrency()){
+                    case("доллар"):
+                        answer = alfaBankService.getRateForDateUSD("");
+                        break;
+                    case("евро"):
+                        answer = alfaBankService.getRateForDateEUR("");
+                        break;
+                    case("российский рубль"):
+                        answer = alfaBankService.getRateForDateRUB("");
+                        break;
+                }
+                break;
+            case ("Беларусбанк"):
+                switch(stepCombination.getCurrency()){
+                    case("доллар"):
+                        answer = belarusBankService.getRateForDateUSD("");
+                        break;
+                    case("евро"):
+                        answer = belarusBankService.getRateForDateEUR("");
+                        break;
+                    case("российский рубль"):
+                        answer =  belarusBankService.getRateForDateRUB("");
+                        break;
+                }
+                break;
+            case ("Нацбанк Республики Беларусь"):
+                switch(stepCombination.getCurrency()) {
+                    case ("доллар"):
+                        answer = nationalBankService.getRateForDateUSD("2024-02-03");
+                        break;
+                    case ("евро"):
+                        answer = nationalBankService.getRateForDateEUR("2024-02-03");
+                        break;
+                    case ("российский рубль"):
+                        answer = nationalBankService.getRateForDateRUB("2024-02-03");
+                        break;
+                }
+                break;
+        }
+        try {
+            execute(SendMessage.builder()
+                    .chatId(message.getChatId())
+                    .text(answer)
+                    .build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initPeriodsKeyboard(Message message) {
 
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
