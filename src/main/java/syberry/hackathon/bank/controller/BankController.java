@@ -51,7 +51,7 @@ public class BankController {
         ResponseEntity<?> responseEntity;
         switch (BankType.fromString(bankName)) {
             case ALFA_BANK -> responseEntity = ResponseEntity.ok(alfaBankbankService.getRateForDate(date));
-            case BELARUSBANK -> responseEntity = ResponseEntity.ok(nationalBankService.getRateForDate(date));
+            case BELARUSBANK -> responseEntity = ResponseEntity.ok(belarusBankService.getRateForDate(date));
             case NATIONAL_BELARUS_BANK -> responseEntity = ResponseEntity.ok(nationalBankService.getRateForDate(date));
             default -> responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
