@@ -1,8 +1,7 @@
-package syberry.hackathon.bank.BnbApi;
+package syberry.hackathon.bank.banksModels;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.Getter;
 
 @Data
 public class NrbModel {
@@ -27,7 +26,12 @@ public class NrbModel {
     private int Cur_Periodicity;
     private String Cur_DateStart;
     private String Cur_DateEnd;
+    @JsonProperty("Cur_OfficialRate")
+    private double curOfficialRate;
 
+    public double getCurOfficialRate(){
+        return curOfficialRate;
+    }
     public String getAbbreviaton() {
         return abbreviation;
     }

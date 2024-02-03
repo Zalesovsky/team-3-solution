@@ -1,10 +1,19 @@
 package syberry.hackathon.bank.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
 public class BankEntity {
     private String name;
+
+    public BankEntity(){
+    }
+
+    public BankEntity(String name) {
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
 }

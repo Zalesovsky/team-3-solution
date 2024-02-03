@@ -6,5 +6,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface BankService {
-    List<String> getAllCurrencies();
+    public String getAllCurrencies();
 }

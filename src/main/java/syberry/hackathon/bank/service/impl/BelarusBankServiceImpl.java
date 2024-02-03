@@ -11,7 +11,7 @@ public class BelarusBankServiceImpl implements BankService {
 
 
     @Override
-    public List<String> getAllCurrencies() {
-        return Arrays.asList("bel bank");
+    public String getAllCurrencies() {
+        return "temp";
     }
 }

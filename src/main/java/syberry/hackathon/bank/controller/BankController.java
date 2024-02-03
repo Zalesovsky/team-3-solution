@@ -48,4 +48,16 @@ public class BankController {
         return responseEntity;
 
     }
+    @RequestMapping("/{bankName}/rate/{date}")
+    public ResponseEntity<?> getBankRateForDate(@PathVariable String bankName,@PathVariable String date) {
+        ResponseEntity<?> responseEntity;
+        switch (BankType.fromString(bankName)) {
+            case ALFA_BANK -> responseEntity = ResponseEntity.ok(alfaBankbankService.getAllCurrencies());
+            case BELARUSBANK -> responseEntity = ResponseEntity.ok(belarusBankService.getAllCurrencies());
+            case NATIONAL_BELARUS_BANK -> responseEntity = ResponseEntity.ok(nationalBankService.getRateForDate(date));
+            default -> responseEntity = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return responseEntity;
+
+    }
 }
