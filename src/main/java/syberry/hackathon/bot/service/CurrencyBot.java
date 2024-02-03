@@ -17,13 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-
 public class CurrencyBot extends TelegramLongPollingBot {
 
     @Autowired
     private BotConfig config;
 
     private String currentBank;
+
+    private String currentCurrency;
     @Override
     public String getBotUsername() {
         return config.getBotName();
@@ -43,15 +44,27 @@ public class CurrencyBot extends TelegramLongPollingBot {
 
         if (message.hasText()){
 
-            if (message.getText().equals("/start")){
+            if (message.getText().equals("/start") && currentBank==null){
 
                 initGreetKeyboard(message);
             }
 
-            initCurrencyKeyboard(message);
+            if (message.getText().equals(Constant.ALPHA_BANK) || message.getText().equals(Constant.BELARUS_BANK)
+                    || message.getText().equals(Constant.NATIONAL_BANK)){
 
+                currentBank = message.getText();
 
+                initCurrencyKeyboard(message);
+            }
 
+            if (message.getText().equals(Constant.EUR) || message.getText().equals(Constant.USD)
+                    || message.getText().equals(Constant.GBP) || message.getText().equals(Constant.JPY) && currentCurrency==null){
+
+                currentCurrency = message.getText();
+
+                initPeriodsKeyboard(message);
+
+            }
 
         }
 
@@ -109,6 +122,41 @@ public class CurrencyBot extends TelegramLongPollingBot {
         try {
             execute(SendMessage.builder()
                     .text("Ты выбрал " + currentBank + ". Теперь выбери нужную тебе валюту из списка ниже.")
+                    .chatId(message.getChatId())
+                    .replyMarkup(replyKeyboardMarkup)
+                    .build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    private void initPeriodsKeyboard(Message message){
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setResizeKeyboard(true);
+
+        List<KeyboardRow> rows = new ArrayList<>();
+
+        KeyboardRow row1 = new KeyboardRow();
+        row1.add(new KeyboardButton(Constant.CURRENT_DAY_COURSE));
+        row1.add(new KeyboardButton(Constant.SELECTED_DAY_COURSE));
+        row1.add(new KeyboardButton(Constant.COLLECT_DATA));
+
+        KeyboardRow row2 = new KeyboardRow();
+
+        row2.add(new KeyboardButton(Constant.CHOOSE_DIFFERENT_BANK));
+        row2.add(new KeyboardButton(Constant.CHOOSE_DIFFERENT_CURRENCY));
+
+        rows.add(row1);
+        rows.add(row2);
+
+        replyKeyboardMarkup.setKeyboard(rows);
+
+        try {
+            execute(SendMessage.builder()
+                    .text("Выбранная валюта " + currentCurrency + ".")
                     .chatId(message.getChatId())
                     .replyMarkup(replyKeyboardMarkup)
                     .build());
