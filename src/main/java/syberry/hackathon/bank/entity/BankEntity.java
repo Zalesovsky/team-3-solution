@@ -7,5 +7,4 @@ import lombok.Data;
 @AllArgsConstructor
 public class BankEntity {
     private String name;
-    private String api;
 }
