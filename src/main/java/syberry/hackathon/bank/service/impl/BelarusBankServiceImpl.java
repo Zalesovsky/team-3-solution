@@ -12,6 +12,6 @@ public class BelarusBankServiceImpl implements BankService {
 
     @Override
     public List<String> getAllCurrencies() {
-        return Arrays.asList("bel bank");
+        return Arrays.asList("евро", "доллар", "российиский рубль", "белорусский рубль");
     }
 }
