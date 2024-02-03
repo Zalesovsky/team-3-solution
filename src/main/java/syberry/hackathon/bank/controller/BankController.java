@@ -6,22 +6,20 @@ import org.springframework.web.bind.annotation.*;
 import syberry.hackathon.bank.entity.enums.BankType;
 import syberry.hackathon.bank.service.impl.AlfaBankServiceImpl;
 import syberry.hackathon.bank.service.impl.BelarusBankServiceImpl;
-import syberry.hackathon.bank.service.impl.MainServiceImpl;
+import syberry.hackathon.bank.service.impl.BankNamesServiceImpl;
 import syberry.hackathon.bank.service.impl.NationalBankServiceImpl;
-
-import java.util.List;
 
 @RestController
 @CrossOrigin
 @RequestMapping("api/banks")
 public class BankController {
-    private final MainServiceImpl mainService;
+    private final BankNamesServiceImpl mainService;
     private final AlfaBankServiceImpl alfaBankbankService;
     private final BelarusBankServiceImpl belarusBankService;
     private final NationalBankServiceImpl nationalBankService;
 
     public BankController(
-            MainServiceImpl mainService,
+            BankNamesServiceImpl mainService,
             AlfaBankServiceImpl alfaBankbankService,
             BelarusBankServiceImpl belarusBankService,
             NationalBankServiceImpl nationalBankService) {
