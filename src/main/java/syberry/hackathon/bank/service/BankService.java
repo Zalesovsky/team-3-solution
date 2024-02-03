@@ -1,7 +1,10 @@
 package syberry.hackathon.bank.service;
 
 import java.util.List;
+import java.util.Set;
 
 public interface BankService {
-    List<String> getAllCurrencies();
+    Set<String> getAllCurrencies();
+
+
 }

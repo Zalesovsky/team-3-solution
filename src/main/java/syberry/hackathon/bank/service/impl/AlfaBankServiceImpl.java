@@ -5,14 +5,15 @@ import syberry.hackathon.bank.service.BankService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class AlfaBankServiceImpl implements BankService {
 
 
     @Override
-    public List<String> getAllCurrencies() {
-        return Arrays.asList("евро", "доллар", "российиский рубль", "белорусский рубль");
+    public Set<String> getAllCurrencies() {
+        return Set.of("евро", "доллар", "российиский рубль", "белорусский рубль");
 
     }
 }
