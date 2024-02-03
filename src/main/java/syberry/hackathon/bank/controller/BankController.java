@@ -1,18 +1,40 @@
 package syberry.hackathon.bank.controller;
 
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import syberry.hackathon.bank.BnbApi.NrbModel;
+import syberry.hackathon.bank.templateService.TemplateService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 @RestController
 @CrossOrigin
 @RequestMapping("api/banks")
 public class BankController {
 
-    @RequestMapping("")
-    ResponseEntity<?> getAllBanks(){
-        return ResponseEntity.ok("");
+    TemplateService template = new TemplateService();
+
+    @RequestMapping(value = "/{bankName}/currencies", method = RequestMethod.GET)
+    public String getBankCurrencies(@PathVariable("bankName") String bankName){
+
+        NrbModel[] nrbArray = template.getNRBValues("https://api.nbrb.by/exrates/currencies/");
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+
+        for(NrbModel soleModel :nrbArray){
+            stringBuilder.append(soleModel.getCurName());
+            stringBuilder.append(", ");
+        }
+        return stringBuilder.toString();
     }
+
+    @RequestMapping(value = "/{bankName}/Rate")
+    public String getRates(){
+        return "ok";
+    }
+
+
+
 }
