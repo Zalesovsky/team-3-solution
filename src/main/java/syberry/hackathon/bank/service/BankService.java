@@ -4,7 +4,10 @@ import syberry.hackathon.bank.constants.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public interface BankService {
-    List<String> getAllCurrencies();
+    Set<String> getAllCurrencies();
+
+
 }
